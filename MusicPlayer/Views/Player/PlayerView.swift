@@ -142,7 +142,7 @@ struct PlayerView: View {
                 .lineLimit(1)
 
             if let artist = player.currentSong?.artist {
-                Text("\(artist)\(player.currentSong?.album != nil ? " · \(player.currentSong!.album!)" : "")")
+                Text("\(artist)\(player.currentSong?.album.map { " · \($0)" } ?? "")")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.6))
                     .lineLimit(1)
