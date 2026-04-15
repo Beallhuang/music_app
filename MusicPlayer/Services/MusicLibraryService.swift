@@ -84,7 +84,7 @@ class MusicLibraryService: ObservableObject {
     // MARK: - Organize Data
     private func organizeData() {
         // 按专辑分组
-        var albumDict: [String: Album] = {}
+        var albumDict: [String: Album] = [:]
         for song in songs {
             let albumTitle = song.album ?? "未知专辑"
             if var album = albumDict[albumTitle] {
@@ -102,7 +102,7 @@ class MusicLibraryService: ObservableObject {
         albums = Array(albumDict.values)
 
         // 按艺术家分组
-        var artistDict: [String: Artist] = {}
+        var artistDict: [String: Artist] = [:]
         for song in songs {
             let artistName = song.artist ?? "未知艺术家"
             if var artist = artistDict[artistName] {

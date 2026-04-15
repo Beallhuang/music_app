@@ -33,7 +33,7 @@ class LyricParserService {
     /// 解析LRC歌词内容
     func parseLrcContent(_ content: String) -> Lyrics {
         var lines: [LyricLine] = []
-        var metadata: [String: String] = []
+        var metadata: [String: String] = [:]
 
         let contentLines = content.split(separator: "\n", omittingEmptySubsequences: false)
 
@@ -111,7 +111,7 @@ class LyricParserService {
 
         if text.isEmpty { return nil }
 
-        let time = Double(minutes * 60 + seconds) + milliseconds / msMultiplier
+        let time = Double(minutes * 60 + seconds) + milliseconds / Double(msMultiplier)
 
         return LyricLine(time: time, text: text)
     }
