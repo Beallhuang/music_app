@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import AVFoundation
+import UniformTypeIdentifiers
 
 /// 文件导入服务
 class FileImportService: NSObject, ObservableObject {
