@@ -19,15 +19,29 @@ class FileImportService: NSObject, ObservableObject {
 
     // MARK: - Import from Document Picker
     func importFiles(completion: @escaping ([Song]) -> Void) {
+        // 构建支持的内容类型列表
+        var contentTypes: [UTType] = [
+            UTType.mp3,
+            UTType.m4a,
+            UTType.audio
+        ]
+
+        // 安全添加可选类型
+        if let flacType = UTType(filenameExtension: "flac") {
+            contentTypes.append(flacType)
+        }
+        if let wavType = UTType(filenameExtension: "wav") {
+            contentTypes.append(wavType)
+        }
+        if let aacType = UTType(filenameExtension: "aac") {
+            contentTypes.append(aacType)
+        }
+        if let oggType = UTType(filenameExtension: "ogg") {
+            contentTypes.append(oggType)
+        }
+
         let documentPicker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [
-                UTType.mp3,
-                UTType.m4a,
-                UTType.audio,
-                UTType(filenameExtension: "flac")!,
-                UTType(filenameExtension: "wav")!,
-                UTType(filenameExtension: "aac")!
-            ],
+            forOpeningContentTypes: contentTypes,
             asCopy: true
         )
 
@@ -47,12 +61,17 @@ class FileImportService: NSObject, ObservableObject {
 
     // MARK: - Import from URL
     func importFile(from url: URL) async -> Song? {
-        do {
-            // 确保文件可访问
-            guard url.startAccessingSecurityScopedResource() else {
-                return nil
-            }
+        // 确保文件可访问
+        guard url.startAccessingSecurityScopedResource() else {
+            return nil
+        }
 
+        defer {
+            // 确保在函数退出时停止安全范围访问
+            url.stopAccessingSecurityScopedResource()
+        }
+
+        do {
             // 获取文件属性
             let asset = AVAsset(url: url)
             let duration = try await asset.load(.duration).seconds
@@ -61,10 +80,9 @@ class FileImportService: NSObject, ObservableObject {
             let metadata = try await extractMetadata(from: asset)
 
             // 创建持久化URL（将文件复制到Documents目录）
-            let permanentURL = copyToDocuments(originalURL: url)
-
-            // 停止安全范围访问
-            url.stopAccessingSecurityScopedResource()
+            guard let permanentURL = copyToDocuments(originalURL: url) else {
+                return nil
+            }
 
             let song = Song(
                 title: metadata.title ?? url.deletingPathExtension().lastPathComponent,
@@ -110,26 +128,40 @@ class FileImportService: NSObject, ObservableObject {
     }
 
     // MARK: - Copy to Documents
-    private func copyToDocuments(originalURL: URL) -> URL {
+    private func copyToDocuments(originalURL: URL) -> URL? {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let musicDirectory = documentsDirectory.appendingPathComponent("Music", isDirectory: true)
 
         // 创建音乐目录
         if !FileManager.default.fileExists(atPath: musicDirectory.path) {
-            try? FileManager.default.createDirectory(at: musicDirectory, withIntermediateDirectories: true)
+            do {
+                try FileManager.default.createDirectory(at: musicDirectory, withIntermediateDirectories: true)
+            } catch {
+                print("Failed to create music directory: \(error)")
+                return nil
+            }
         }
 
         let destinationURL = musicDirectory.appendingPathComponent(originalURL.lastPathComponent)
 
         // 如果目标文件已存在，先删除
         if FileManager.default.fileExists(atPath: destinationURL.path) {
-            try? FileManager.default.removeItem(at: destinationURL)
+            do {
+                try FileManager.default.removeItem(at: destinationURL)
+            } catch {
+                print("Failed to remove existing file: \(error)")
+                return nil
+            }
         }
 
         // 复制文件
-        try? FileManager.default.copyItem(at: originalURL, to: destinationURL)
-
-        return destinationURL
+        do {
+            try FileManager.default.copyItem(at: originalURL, to: destinationURL)
+            return destinationURL
+        } catch {
+            print("Failed to copy file: \(error)")
+            return nil
+        }
     }
 
     // MARK: - Scan Directory

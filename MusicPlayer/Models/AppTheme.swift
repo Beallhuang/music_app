@@ -79,6 +79,18 @@ class AppTheme: ObservableObject {
         didSet { UserDefaults.standard.set(albumArtBlurBackground, forKey: "albumArtBlurBackground") }
     }
 
+    @Published var fadeInOut: Bool {
+        didSet { UserDefaults.standard.set(fadeInOut, forKey: "fadeInOut") }
+    }
+
+    @Published var backgroundPlay: Bool {
+        didSet { UserDefaults.standard.set(backgroundPlay, forKey: "backgroundPlay") }
+    }
+
+    @Published var skipInterval: Int {
+        didSet { UserDefaults.standard.set(skipInterval, forKey: "skipInterval") }
+    }
+
     private init() {
         self.themeMode = ThemeMode(rawValue: UserDefaults.standard.string(forKey: "themeMode") ?? "") ?? .system
         self.accentColor = AccentColor(rawValue: UserDefaults.standard.string(forKey: "accentColor") ?? "") ?? .coral
@@ -86,6 +98,9 @@ class AppTheme: ObservableObject {
         self.lyricsFontSize = LyricsFontSize(rawValue: UserDefaults.standard.string(forKey: "lyricsFontSize") ?? "") ?? .medium
         self.showTranslation = UserDefaults.standard.object(forKey: "showTranslation") as? Bool ?? true
         self.albumArtBlurBackground = UserDefaults.standard.object(forKey: "albumArtBlurBackground") as? Bool ?? true
+        self.fadeInOut = UserDefaults.standard.object(forKey: "fadeInOut") as? Bool ?? false
+        self.backgroundPlay = UserDefaults.standard.object(forKey: "backgroundPlay") as? Bool ?? true
+        self.skipInterval = UserDefaults.standard.object(forKey: "skipInterval") as? Int ?? 10
     }
 }
 

@@ -85,10 +85,18 @@ struct LibraryView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.white.opacity(0.5))
 
-            Text("搜索歌曲、艺术家、专辑...")
-                .foregroundColor(.white.opacity(0.5))
+            TextField("搜索歌曲、艺术家、专辑...", text: $searchText)
+                .foregroundColor(.white)
+                .autocapitalization(.none)
 
-            Spacer()
+            if !searchText.isEmpty {
+                Button(action: {
+                    searchText = ""
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            }
         }
         .padding(12)
         .background(Color.white.opacity(0.1))
@@ -290,7 +298,7 @@ struct SectionView<Content: View>: View {
 // MARK: - Song Card View (水平滚动卡片)
 struct SongCardView: View {
     let song: Song
-    @StateObject private var theme = AppTheme.shared
+    @ObservedObject private var theme = AppTheme.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -332,9 +340,9 @@ struct SongCardView: View {
 // MARK: - Song Row View
 struct SongRowView: View {
     let song: Song
-    @StateObject private var player = MusicPlayerService.shared
-    @StateObject private var library = MusicLibraryService.shared
-    @StateObject private var theme = AppTheme.shared
+    @ObservedObject private var player = MusicPlayerService.shared
+    @ObservedObject private var library = MusicLibraryService.shared
+    @ObservedObject private var theme = AppTheme.shared
 
     var body: some View {
         HStack(spacing: 12) {
@@ -399,7 +407,7 @@ struct SongRowView: View {
 // MARK: - Playlist Row View
 struct PlaylistRowView: View {
     let playlist: Playlist
-    @StateObject private var theme = AppTheme.shared
+    @ObservedObject private var theme = AppTheme.shared
 
     var body: some View {
         HStack(spacing: 12) {

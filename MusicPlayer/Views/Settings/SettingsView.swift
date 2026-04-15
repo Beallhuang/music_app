@@ -20,15 +20,9 @@ struct SettingsView: View {
                     VStack(spacing: 25) {
                         // 播放设置
                         SettingsGroupView(title: "播放设置") {
-                            SettingsStepperView(title: "跳过间隔", value: "10秒")
-                            SettingsToggleView(title: "淡入淡出", isOn: Binding(
-                                get: { true },
-                                set: { _ in }
-                            ))
-                            SettingsToggleView(title: "后台播放", isOn: Binding(
-                                get: { true },
-                                set: { _ in }
-                            ))
+                            SettingsStepperView(title: "跳过间隔", value: "\(theme.skipInterval)秒")
+                            SettingsToggleView(title: "淡入淡出", isOn: $theme.fadeInOut)
+                            SettingsToggleView(title: "后台播放", isOn: $theme.backgroundPlay)
                         }
 
                         // 歌词设置
@@ -143,7 +137,7 @@ struct SettingsGroupView<Content: View>: View {
 struct SettingsToggleView: View {
     let title: String
     @Binding var isOn: Bool
-    @StateObject private var theme = AppTheme.shared
+    @ObservedObject private var theme = AppTheme.shared
 
     var body: some View {
         HStack {

@@ -43,24 +43,17 @@ class LyricParserService {
             // 空行跳过
             if trimmedLine.isEmpty { continue }
 
-            // 解析元数据标签 [ti:标题] [ar:艺术家] [al:专辑]
-            if trimmedLine.hasPrefix("[") && !trimmedLine.contains(":") {
-                // 可能是时间标签
-                if let lyricLine = parseTimeTag(trimmedLine) {
-                    lines.append(lyricLine)
-                }
-                continue
-            }
-
-            // 解析元数据
+            // 解析元数据 [ti:标题] [ar:艺术家] [al:专辑]
             if let meta = parseMetadata(trimmedLine) {
                 metadata[meta.key] = meta.value
                 continue
             }
 
-            // 解析歌词行 [mm:ss.xx]歌词内容
-            if let lyricLine = parseTimeTag(trimmedLine) {
-                lines.append(lyricLine)
+            // 解析歌词行 [mm:ss.xx]歌词内容 或 [mm:ss]歌词内容
+            if trimmedLine.hasPrefix("[") {
+                if let lyricLine = parseTimeTag(trimmedLine) {
+                    lines.append(lyricLine)
+                }
             }
         }
 
@@ -126,7 +119,8 @@ class LyricParserService {
     /// 解析元数据标签
     private func parseMetadata(_ line: String) -> (key: String, value: String)? {
         // 格式: [ti:标题] [ar:艺术家] [al:专辑] [by:歌词作者]
-        let pattern = "\\[(\\w+):(.+?)\\]"
+        // 元数据标签的特征是 [key:value] 其中 key 是非数字开头的字母
+        let pattern = "^\\[([a-zA-Z]+):(.+?)\\]$"
 
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
 

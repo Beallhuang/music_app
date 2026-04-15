@@ -39,17 +39,41 @@ class MusicPlayerService: NSObject, ObservableObject {
     @Published var isShuffled = false
     @Published var playlist: [Song] = []
     @Published var currentIndex: Int?
+    @Published var shuffleHistory: [Int] = [] // 随机播放历史记录
 
     // MARK: - Private Properties
     private var player: AVPlayer?
     private var timeObserver: Any?
     private var cancellables = Set<AnyCancellable>()
+    private var remoteCommandTargets: [MPRemoteCommandTarget] = []
 
     // MARK: - Initialization
     private override init() {
         super.init()
         setupAudioSession()
         setupRemoteControl()
+    }
+
+    deinit {
+        // 清理时间观察者
+        if let observer = timeObserver {
+            player?.removeTimeObserver(observer)
+            timeObserver = nil
+        }
+
+        // 移除远程控制命令目标
+        let commandCenter = MPRemoteCommandCenter.shared()
+        for target in remoteCommandTargets {
+            commandCenter.playCommand.removeTarget(target)
+            commandCenter.pauseCommand.removeTarget(target)
+            commandCenter.nextTrackCommand.removeTarget(target)
+            commandCenter.previousTrackCommand.removeTarget(target)
+            commandCenter.changePlaybackPositionCommand.removeTarget(target)
+        }
+        remoteCommandTargets.removeAll()
+
+        // 清理订阅
+        cancellables.removeAll()
     }
 
     // MARK: - Audio Session Setup
@@ -67,37 +91,42 @@ class MusicPlayerService: NSObject, ObservableObject {
         let commandCenter = MPRemoteCommandCenter.shared()
 
         // 播放
-        commandCenter.playCommand.addTarget { [weak self] _ in
+        let playTarget = commandCenter.playCommand.addTarget { [weak self] _ in
             self?.play()
             return .success
         }
+        remoteCommandTargets.append(playTarget)
 
         // 暂停
-        commandCenter.pauseCommand.addTarget { [weak self] _ in
+        let pauseTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
             self?.pause()
             return .success
         }
+        remoteCommandTargets.append(pauseTarget)
 
         // 下一曲
-        commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+        let nextTarget = commandCenter.nextTrackCommand.addTarget { [weak self] _ in
             self?.playNext()
             return .success
         }
+        remoteCommandTargets.append(nextTarget)
 
         // 上一曲
-        commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+        let previousTarget = commandCenter.previousTrackCommand.addTarget { [weak self] _ in
             self?.playPrevious()
             return .success
         }
+        remoteCommandTargets.append(previousTarget)
 
         // 进度调整
-        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+        let positionTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
             guard let positionEvent = event as? MPChangePlaybackPositionCommandEvent else {
                 return .commandFailed
             }
             self?.seek(to: positionEvent.positionTime)
             return .success
         }
+        remoteCommandTargets.append(positionTarget)
     }
 
     // MARK: - Playback Control
@@ -105,6 +134,8 @@ class MusicPlayerService: NSObject, ObservableObject {
         if let playlist = playlist {
             self.playlist = playlist
             self.currentIndex = playlist.firstIndex(where: { $0.id == song.id })
+            // 播放新歌单时清除随机历史
+            shuffleHistory.removeAll()
         }
 
         currentSong = song
@@ -159,24 +190,33 @@ class MusicPlayerService: NSObject, ObservableObject {
     // MARK: - Playlist Control
     func playNext() {
         guard let index = currentIndex else { return }
+        guard !playlist.isEmpty else { return }
+
+        // 单曲循环模式下，重新播放当前歌曲
+        if repeatMode == .one {
+            seek(to: 0)
+            play()
+            return
+        }
 
         var nextIndex: Int
 
         if isShuffled {
+            // 记录当前索引到历史
+            shuffleHistory.append(index)
             nextIndex = Int.random(in: 0..<playlist.count)
         } else {
             nextIndex = (index + 1) % playlist.count
         }
 
-        if repeatMode == .one {
-            nextIndex = index
-        }
-
+        // 边界检查
+        guard nextIndex >= 0 && nextIndex < playlist.count else { return }
         play(song: playlist[nextIndex], in: playlist)
     }
 
     func playPrevious() {
         guard let index = currentIndex else { return }
+        guard !playlist.isEmpty else { return }
 
         // 如果播放超过3秒，重新播放当前歌曲
         if currentTime > 3 {
@@ -187,16 +227,26 @@ class MusicPlayerService: NSObject, ObservableObject {
         var previousIndex: Int
 
         if isShuffled {
-            previousIndex = Int.random(in: 0..<playlist.count)
+            // 从历史记录中获取上一个索引
+            if let lastShuffleIndex = shuffleHistory.popLast() {
+                previousIndex = lastShuffleIndex
+            } else {
+                // 没有历史记录时随机选择
+                previousIndex = Int.random(in: 0..<playlist.count)
+            }
         } else {
             previousIndex = (index - 1 + playlist.count) % playlist.count
         }
 
+        // 边界检查
+        guard previousIndex >= 0 && previousIndex < playlist.count else { return }
         play(song: playlist[previousIndex], in: playlist)
     }
 
     func toggleShuffle() {
         isShuffled.toggle()
+        // 切换随机播放模式时清除历史记录
+        shuffleHistory.removeAll()
     }
 
     func toggleRepeatMode() {
@@ -215,6 +265,7 @@ class MusicPlayerService: NSObject, ObservableObject {
         // 移除旧的观察者
         if let observer = timeObserver {
             player?.removeTimeObserver(observer)
+            timeObserver = nil
         }
 
         // 添加新的时间观察者
