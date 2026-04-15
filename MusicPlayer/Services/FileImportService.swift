@@ -23,9 +23,11 @@ class FileImportService: NSObject, ObservableObject {
         // 构建支持的内容类型列表
         var contentTypes: [UTType] = [
             UTType.mp3,
-            UTType.m4a,
             UTType.audio
         ]
+        if let m4aType = UTType(filenameExtension: "m4a") {
+            contentTypes.insert(m4aType, at: 1)
+        }
 
         // 安全添加可选类型
         if let flacType = UTType(filenameExtension: "flac") {
@@ -177,7 +179,7 @@ class FileImportService: NSObject, ObservableObject {
         let supportedExtensions = ["mp3", "m4a", "flac", "wav", "aac", "ogg"]
 
         do {
-            let contents = fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+            let contents = try fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
 
             isImporting = true
             let totalFiles = contents.count

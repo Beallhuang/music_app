@@ -19,14 +19,15 @@ class LyricParserService {
             let content = try String(contentsOf: url, encoding: .utf8)
             return parseLrcContent(content)
         } catch {
-            // 尝试其他编码
-            do {
-                let content = try String(contentsOf: url, encoding: .gbk)
+            // 尝试 GBK 编码（常见于中文歌词文件）
+            let gbkEncoding = CFStringEncoding(CFStringEncodings.GB_18030_2000.rawValue)
+            let nsEncoding = CFStringConvertEncodingToNSStringEncoding(gbkEncoding)
+            let swiftEncoding = String.Encoding(rawValue: nsEncoding)
+            if let content = try? String(contentsOf: url, encoding: swiftEncoding) {
                 return parseLrcContent(content)
-            } catch {
-                print("Failed to read lyric file: \(error)")
-                return nil
             }
+            print("Failed to read lyric file: \(error)")
+            return nil
         }
     }
 

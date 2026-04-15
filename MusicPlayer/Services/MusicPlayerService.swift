@@ -45,7 +45,7 @@ class MusicPlayerService: NSObject, ObservableObject {
     private var player: AVPlayer?
     private var timeObserver: Any?
     private var cancellables = Set<AnyCancellable>()
-    private var remoteCommandTargets: [MPRemoteCommandTarget] = []
+    private var remoteCommandTargets: [Any] = []
 
     // MARK: - Initialization
     private override init() {
