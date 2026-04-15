@@ -23,9 +23,7 @@ jobs:
 
       - name: Build iOS App
         run: |
-          cd MusicPlayer
-
-          # 创建 Xcode 项目文件
+          # 创建 Xcode 项目文件 (在根目录)
           xcodebuild -project MusicPlayer.xcodeproj \
             -scheme MusicPlayer \
             -configuration Release \
@@ -35,8 +33,6 @@ jobs:
 
       - name: Export IPA
         run: |
-          cd MusicPlayer
-
           # 创建导出配置
           mkdir -p ExportOptions
           cat > ExportOptions/ExportOptions.plist << 'EOF'
@@ -69,8 +65,6 @@ jobs:
 
       - name: Create unsigned IPA
         run: |
-          cd MusicPlayer
-
           # 如果上面的签名导出失败，创建未签名的 IPA
           if [ ! -f build/ipa/*.ipa ]; then
             echo "Creating unsigned IPA..."
