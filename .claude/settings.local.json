@@ -3,7 +3,12 @@
     "allow": [
       "Bash(git commit *)",
       "Bash(git push *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Skill(claude-api)",
+      "mcp__ide__executeCode",
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(gh run *)"
     ]
   }
 }

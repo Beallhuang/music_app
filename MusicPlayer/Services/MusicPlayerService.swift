@@ -79,7 +79,7 @@ class MusicPlayerService: NSObject, ObservableObject {
     // MARK: - Audio Session Setup
     private func setupAudioSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.defaultToSpeaker, .allowAirPlay])
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.allowAirPlay])
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
             print("Failed to set up audio session: \(error)")

@@ -84,7 +84,9 @@ struct SettingsView: View {
 
     // MARK: - Helper Methods
     private func calculateCacheSize() -> String {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return "0 MB"
+        }
         let musicDirectory = documentsDirectory.appendingPathComponent("Music")
 
         var totalSize: Int64 = 0

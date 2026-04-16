@@ -25,13 +25,14 @@ jobs:
         with:
           xcode-version: 'latest-stable'
 
-      - name: Build iOS App (Simulator - No Signing Required)
+      - name: Build iOS App (No Signing Required)
         run: |
           xcodebuild -project MusicPlayer.xcodeproj \
             -scheme MusicPlayer \
             -configuration Release \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'generic/platform=iOS' \
             -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
             build
 
       - name: Create IPA

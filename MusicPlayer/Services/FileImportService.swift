@@ -132,7 +132,9 @@ class FileImportService: NSObject, ObservableObject {
 
     // MARK: - Copy to Documents
     private func copyToDocuments(originalURL: URL) -> URL? {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
         let musicDirectory = documentsDirectory.appendingPathComponent("Music", isDirectory: true)
 
         // 创建音乐目录

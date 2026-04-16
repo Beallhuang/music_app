@@ -149,7 +149,9 @@ class LyricParserService {
         }
 
         // 尝试在Lyrics目录查找
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
         let lyricsDirectory = documentsDirectory.appendingPathComponent("Lyrics", isDirectory: true)
 
         if FileManager.default.fileExists(atPath: lyricsDirectory.path) {
