@@ -237,6 +237,22 @@ struct PlaylistDetailView: View {
             player.play(song: song, in: pl.songs)
         }
         .contextMenu {
+            Button(action: { library.toggleFavorite(song) }) {
+                Label(song.isFavorite ? "取消收藏" : "添加到收藏",
+                      systemImage: song.isFavorite ? "heart.slash" : "heart")
+            }
+            let otherPlaylists = library.playlists.filter { $0.id != pl.id }
+            if !otherPlaylists.isEmpty {
+                Menu {
+                    ForEach(otherPlaylists) { other in
+                        Button(other.name) {
+                            library.addSongToPlaylist(song, playlist: other)
+                        }
+                    }
+                } label: {
+                    Label("添加到歌单", systemImage: "text.badge.plus")
+                }
+            }
             Button(role: .destructive) {
                 library.removeSongFromPlaylist(song, playlist: pl)
             } label: {

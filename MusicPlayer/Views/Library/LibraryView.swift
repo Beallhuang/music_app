@@ -189,6 +189,26 @@ struct LibraryView: View {
                                 .onTapGesture {
                                     playSong(song)
                                 }
+                                .contextMenu {
+                                    Button(action: { library.toggleFavorite(song) }) {
+                                        Label(song.isFavorite ? "取消收藏" : "添加到收藏",
+                                              systemImage: song.isFavorite ? "heart.slash" : "heart")
+                                    }
+                                    Menu {
+                                        ForEach(library.playlists) { playlist in
+                                            Button(playlist.name) {
+                                                library.addSongToPlaylist(song, playlist: playlist)
+                                            }
+                                        }
+                                    } label: {
+                                        Label("添加到歌单", systemImage: "text.badge.plus")
+                                    }
+                                    Button(role: .destructive) {
+                                        library.removeSong(song)
+                                    } label: {
+                                        Label("删除", systemImage: "trash")
+                                    }
+                                }
                         }
                     }
                 }

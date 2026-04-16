@@ -42,6 +42,10 @@ class FileImportService: NSObject, ObservableObject {
         if let oggType = UTType(filenameExtension: "ogg") {
             contentTypes.append(oggType)
         }
+        // 支持歌词文件
+        if let lrcType = UTType(filenameExtension: "lrc") {
+            contentTypes.append(lrcType)
+        }
 
         let documentPicker = UIDocumentPickerViewController(
             forOpeningContentTypes: contentTypes,
@@ -226,13 +230,29 @@ extension FileImportService: UIDocumentPickerDelegate {
             isImporting = true
             var imported: [Song] = []
 
-            for (index, url) in urls.enumerated() {
-                // picker 使用 asCopy: true，返回的是沙盒临时副本，不需要 security scope
-                if let song = await importFile(from: url, requiresSecurityScope: false) {
+            // 分离音频文件和歌词文件
+            let audioExtensions = Set(["mp3", "m4a", "flac", "wav", "aac", "ogg"])
+            let audioURLs = urls.filter { audioExtensions.contains($0.pathExtension.lowercased()) }
+            let lrcURLs = urls.filter { $0.pathExtension.lowercased() == "lrc" }
+
+            // 先复制歌词文件到 Lyrics 目录
+            for lrcURL in lrcURLs {
+                copyLyricToDocuments(lrcURL)
+            }
+
+            // 导入音频文件
+            for (index, url) in audioURLs.enumerated() {
+                if var song = await importFile(from: url, requiresSecurityScope: false) {
+                    // 尝试匹配同名歌词（用户可能同时选了歌词，也可能之前已导入）
+                    let baseName = url.deletingPathExtension().lastPathComponent
+                    _ = lrcURLs.first {
+                        $0.deletingPathExtension().lastPathComponent == baseName
+                    }
+                    // 歌词已在上方统一复制到 Lyrics 目录，LyricParserService 会自动查找
                     imported.append(song)
                     importedSongs.append(song)
                 }
-                importProgress = Double(index + 1) / Double(urls.count)
+                importProgress = Double(index + 1) / Double(max(audioURLs.count, 1))
             }
 
             isImporting = false
@@ -248,5 +268,21 @@ extension FileImportService: UIDocumentPickerDelegate {
         importProgress = 0
         importCompletion?([])
         importCompletion = nil
+    }
+
+    // MARK: - Copy Lyric to Documents
+    private func copyLyricToDocuments(_ lrcURL: URL) {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let lyricsDirectory = documentsDirectory.appendingPathComponent("Lyrics", isDirectory: true)
+
+        if !FileManager.default.fileExists(atPath: lyricsDirectory.path) {
+            try? FileManager.default.createDirectory(at: lyricsDirectory, withIntermediateDirectories: true)
+        }
+
+        let destination = lyricsDirectory.appendingPathComponent(lrcURL.lastPathComponent)
+        if FileManager.default.fileExists(atPath: destination.path) {
+            try? FileManager.default.removeItem(at: destination)
+        }
+        try? FileManager.default.copyItem(at: lrcURL, to: destination)
     }
 }
