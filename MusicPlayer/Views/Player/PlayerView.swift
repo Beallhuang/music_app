@@ -53,13 +53,13 @@ struct PlayerView: View {
 
                 // 进度条
                 progressView
-                    .padding(.top, 16)
+                    .padding(.top, 12)
                     .padding(.horizontal, 30)
 
                 // 播放控制
                 controlsView
-                    .padding(.top, 20)
-                    .padding(.bottom, 40)
+                    .padding(.top, 12)
+                    .padding(.bottom, 30)
             }
         }
         .onAppear {
@@ -127,7 +127,7 @@ struct PlayerView: View {
 
     // MARK: - Song Info
     private var songInfoView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 10) {
             // 封面图
             Group {
                 if let artwork = player.currentSong?.artwork, let uiImage = UIImage(data: artwork) {
@@ -152,16 +152,16 @@ struct PlayerView: View {
             .shadow(color: .black.opacity(0.4), radius: 20, x: 0, y: 10)
 
             // 歌曲标题 & 艺术家
-            VStack(spacing: 6) {
+            VStack(spacing: 4) {
                 Text(player.currentSong?.title ?? "未播放歌曲")
-                    .font(.title2)
+                    .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                     .lineLimit(1)
 
                 if let artist = player.currentSong?.artist {
                     Text("\(artist)\(player.currentSong?.album.map { " · \($0)" } ?? "")")
-                        .font(.subheadline)
+                        .font(.caption)
                         .foregroundColor(.white.opacity(0.6))
                         .lineLimit(1)
                 }
@@ -218,13 +218,13 @@ struct PlayerView: View {
 
     // MARK: - Controls
     private var controlsView: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 28) {
             // 随机播放
             Button(action: {
                 player.toggleShuffle()
             }) {
                 Image(systemName: "shuffle")
-                    .font(.system(size: 20))
+                    .font(.system(size: 18))
                     .foregroundColor(player.isShuffled ? theme.accentColor.color : .white.opacity(0.6))
             }
 
@@ -233,7 +233,7 @@ struct PlayerView: View {
                 player.playPrevious()
             }) {
                 Image(systemName: "backward.fill")
-                    .font(.system(size: 28))
+                    .font(.system(size: 24))
                     .foregroundColor(.white)
             }
 
@@ -250,11 +250,11 @@ struct PlayerView: View {
                                 endPoint: .bottomTrailing
                             )
                         )
-                        .frame(width: 64, height: 64)
-                        .shadow(color: theme.accentColor.color.opacity(0.4), radius: 10, x: 0, y: 5)
+                        .frame(width: 56, height: 56)
+                        .shadow(color: theme.accentColor.color.opacity(0.4), radius: 8, x: 0, y: 4)
 
                     Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 26))
+                        .font(.system(size: 22))
                         .foregroundColor(.white)
                         .offset(x: player.isPlaying ? 0 : 2)
                 }
@@ -265,7 +265,7 @@ struct PlayerView: View {
                 player.playNext()
             }) {
                 Image(systemName: "forward.fill")
-                    .font(.system(size: 28))
+                    .font(.system(size: 24))
                     .foregroundColor(.white)
             }
 
@@ -274,7 +274,7 @@ struct PlayerView: View {
                 player.toggleRepeatMode()
             }) {
                 Image(systemName: player.repeatMode.icon)
-                    .font(.system(size: 20))
+                    .font(.system(size: 18))
                     .foregroundColor(player.repeatMode.isActive ? theme.accentColor.color : .white.opacity(0.6))
             }
         }
