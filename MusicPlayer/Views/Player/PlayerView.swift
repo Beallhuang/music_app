@@ -63,6 +63,11 @@ struct PlayerView: View {
                 Spacer()
             }
         }
+        .onAppear {
+            if let song = player.currentSong {
+                lyrics = LyricParserService.shared.loadLyrics(for: song)
+            }
+        }
         .onChange(of: player.currentSong) { newSong in
             if let song = newSong {
                 lyrics = LyricParserService.shared.loadLyrics(for: song)
@@ -256,7 +261,7 @@ struct PlayerView: View {
             }) {
                 Image(systemName: player.repeatMode.icon)
                     .font(.system(size: 20))
-                    .foregroundColor(player.repeatMode != .off ? theme.accentColor.color : .white.opacity(0.6))
+                    .foregroundColor(player.repeatMode.isActive ? theme.accentColor.color : .white.opacity(0.6))
             }
         }
     }

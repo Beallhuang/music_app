@@ -89,6 +89,10 @@ class MusicLibraryService: ObservableObject {
             let albumTitle = song.album ?? "未知专辑"
             if var album = albumDict[albumTitle] {
                 album.songs.append(song)
+                // 如果专辑还没有封面，用当前歌曲的封面补上
+                if album.artwork == nil, let art = song.artwork {
+                    album.artwork = art
+                }
                 albumDict[albumTitle] = album
             } else {
                 albumDict[albumTitle] = Album(

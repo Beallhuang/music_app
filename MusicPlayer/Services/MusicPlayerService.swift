@@ -23,6 +23,10 @@ enum RepeatMode: String, CaseIterable, Codable {
         case .one: return "repeat.1"
         }
     }
+
+    var isActive: Bool {
+        self != .off
+    }
 }
 
 /// 音乐播放器服务
@@ -132,10 +136,16 @@ class MusicPlayerService: NSObject, ObservableObject {
     // MARK: - Playback Control
     func play(song: Song, in playlist: [Song]? = nil) {
         if let playlist = playlist {
+            let isNewPlaylist = playlist.map({ $0.id }) != self.playlist.map({ $0.id })
             self.playlist = playlist
             self.currentIndex = playlist.firstIndex(where: { $0.id == song.id })
-            // 播放新歌单时清除随机历史
-            shuffleHistory.removeAll()
+            if isNewPlaylist {
+                shuffleHistory.removeAll()
+            }
+        } else {
+            if let idx = self.playlist.firstIndex(where: { $0.id == song.id }) {
+                self.currentIndex = idx
+            }
         }
 
         currentSong = song
@@ -211,7 +221,7 @@ class MusicPlayerService: NSObject, ObservableObject {
 
         // 边界检查
         guard nextIndex >= 0 && nextIndex < playlist.count else { return }
-        play(song: playlist[nextIndex], in: playlist)
+        play(song: playlist[nextIndex])
     }
 
     func playPrevious() {
@@ -240,7 +250,7 @@ class MusicPlayerService: NSObject, ObservableObject {
 
         // 边界检查
         guard previousIndex >= 0 && previousIndex < playlist.count else { return }
-        play(song: playlist[previousIndex], in: playlist)
+        play(song: playlist[previousIndex])
     }
 
     func toggleShuffle() {
@@ -275,7 +285,8 @@ class MusicPlayerService: NSObject, ObservableObject {
             self?.updateNowPlayingInfo()
         }
 
-        // 监听播放完成
+        // 清除旧的播放完成监听，再重新注册（避免重复触发）
+        cancellables.removeAll()
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)
             .sink { [weak self] _ in
                 self?.handlePlaybackEnd()
