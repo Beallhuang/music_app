@@ -220,7 +220,10 @@ struct PlaylistsListView: View {
 
                 // 歌单列表
                 ForEach(playlists) { playlist in
-                    PlaylistRowView(playlist: playlist)
+                    NavigationLink(destination: PlaylistDetailView(playlist: playlist)) {
+                        PlaylistRowView(playlist: playlist)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.top, 10)

@@ -63,15 +63,18 @@ class FileImportService: NSObject, ObservableObject {
     private var importCompletion: (([Song]) -> Void)?
 
     // MARK: - Import from URL
-    func importFile(from url: URL) async -> Song? {
-        // 确保文件可访问
-        guard url.startAccessingSecurityScopedResource() else {
-            return nil
+    func importFile(from url: URL, requiresSecurityScope: Bool = true) async -> Song? {
+        // asCopy: true 模式下 picker 返回的是沙盒临时副本，无需 security scope
+        if requiresSecurityScope {
+            guard url.startAccessingSecurityScopedResource() else {
+                return nil
+            }
         }
 
         defer {
-            // 确保在函数退出时停止安全范围访问
-            url.stopAccessingSecurityScopedResource()
+            if requiresSecurityScope {
+                url.stopAccessingSecurityScopedResource()
+            }
         }
 
         do {
@@ -224,7 +227,8 @@ extension FileImportService: UIDocumentPickerDelegate {
             var imported: [Song] = []
 
             for (index, url) in urls.enumerated() {
-                if let song = await importFile(from: url) {
+                // picker 使用 asCopy: true，返回的是沙盒临时副本，不需要 security scope
+                if let song = await importFile(from: url, requiresSecurityScope: false) {
                     imported.append(song)
                     importedSongs.append(song)
                 }

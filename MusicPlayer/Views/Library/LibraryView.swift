@@ -173,10 +173,10 @@ struct LibraryView: View {
                 if !library.playlists.isEmpty {
                     SectionView(title: "我的歌单", actionTitle: "创建", action: { showCreatePlaylist = true }) {
                         ForEach(library.playlists) { playlist in
-                            PlaylistRowView(playlist: playlist)
-                                .onTapGesture {
-                                    // 导航到歌单详情
-                                }
+                            NavigationLink(destination: PlaylistDetailView(playlist: playlist)) {
+                                PlaylistRowView(playlist: playlist)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }

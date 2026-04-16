@@ -268,6 +268,13 @@ class MusicLibraryService: ObservableObject {
         }
     }
 
+    func updatePlaylist(_ playlist: Playlist) {
+        if let index = playlists.firstIndex(where: { $0.id == playlist.id }) {
+            playlists[index] = playlist
+            saveData()
+        }
+    }
+
     // MARK: - Search
     func searchSongs(query: String) -> [Song] {
         guard !query.isEmpty else { return songs }
