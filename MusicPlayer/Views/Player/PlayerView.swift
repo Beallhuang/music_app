@@ -53,13 +53,13 @@ struct PlayerView: View {
 
                 // 进度条
                 progressView
-                    .padding(.top, 12)
+                    .padding(.top, 8)
                     .padding(.horizontal, 30)
 
                 // 播放控制
                 controlsView
-                    .padding(.top, 12)
-                    .padding(.bottom, 30)
+                    .padding(.top, 8)
+                    .padding(.bottom, 20)
             }
         }
         .onAppear {
