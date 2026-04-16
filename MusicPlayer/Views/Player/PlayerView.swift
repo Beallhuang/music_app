@@ -17,6 +17,8 @@ struct PlayerView: View {
     @State private var showFullPlayer = false
     @State private var lyrics: Lyrics?
     @State private var lyricsScrollProxy: ScrollViewProxy?
+    @State private var isDraggingLyricsHeight = false
+    @State private var lyricsHeightAtDragStart: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -268,27 +270,58 @@ struct PlayerView: View {
 
     // MARK: - Lyrics View
     private var lyricsView: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(lyrics?.lines ?? []) { line in
-                        lyricLineView(line)
-                            .id(line.id)
+        VStack(spacing: 0) {
+            // 拖拽手柄
+            lyricsResizeHandle
+
+            // 歌词滚动区域
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(lyrics?.lines ?? []) { line in
+                            lyricLineView(line)
+                                .id(line.id)
+                        }
                     }
+                    .padding(.vertical, 10)
                 }
-                .padding(.vertical, 10)
-            }
-            .frame(height: 120)
-            .background(Color.white.opacity(0.05))
-            .clipShape(RoundedRectangle(cornerRadius: 15))
-            .padding(.horizontal, 15)
-            .onAppear {
-                lyricsScrollProxy = proxy
-            }
-            .onChange(of: player.currentTime) { _ in
-                scrollToCurrentLyric()
+                .frame(height: theme.lyricsHeight)
+                .onAppear {
+                    lyricsScrollProxy = proxy
+                }
+                .onChange(of: player.currentTime) { _ in
+                    scrollToCurrentLyric()
+                }
             }
         }
+        .background(Color.white.opacity(0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 15))
+        .padding(.horizontal, 15)
+    }
+
+    private var lyricsResizeHandle: some View {
+        VStack(spacing: 4) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(Color.white.opacity(isDraggingLyricsHeight ? 0.6 : 0.3))
+                .frame(width: 36, height: 4)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    if !isDraggingLyricsHeight {
+                        isDraggingLyricsHeight = true
+                        lyricsHeightAtDragStart = theme.lyricsHeight
+                    }
+                    let newHeight = lyricsHeightAtDragStart + value.translation.height
+                    theme.lyricsHeight = max(60, min(300, newHeight))
+                }
+                .onEnded { _ in
+                    isDraggingLyricsHeight = false
+                }
+        )
     }
 
     private func lyricLineView(_ line: LyricLine) -> some View {

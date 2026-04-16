@@ -87,6 +87,10 @@ class AppTheme: ObservableObject {
         didSet { UserDefaults.standard.set(backgroundPlay, forKey: "backgroundPlay") }
     }
 
+    @Published var lyricsHeight: CGFloat {
+        didSet { UserDefaults.standard.set(Double(lyricsHeight), forKey: "lyricsHeight") }
+    }
+
     @Published var skipInterval: Int {
         didSet { UserDefaults.standard.set(skipInterval, forKey: "skipInterval") }
     }
@@ -100,6 +104,7 @@ class AppTheme: ObservableObject {
         self.albumArtBlurBackground = UserDefaults.standard.object(forKey: "albumArtBlurBackground") as? Bool ?? true
         self.fadeInOut = UserDefaults.standard.object(forKey: "fadeInOut") as? Bool ?? false
         self.backgroundPlay = UserDefaults.standard.object(forKey: "backgroundPlay") as? Bool ?? true
+        self.lyricsHeight = CGFloat(UserDefaults.standard.double(forKey: "lyricsHeight")).nonZero ?? 120
         self.skipInterval = UserDefaults.standard.object(forKey: "skipInterval") as? Int ?? 10
     }
 }
@@ -159,4 +164,8 @@ extension Color {
     static let appTextPrimary = Color.white
     static let appTextSecondary = Color(hex: "888888")
     static let appDivider = Color(hex: "333355")
+}
+
+private extension CGFloat {
+    var nonZero: CGFloat? { self == 0 ? nil : self }
 }
