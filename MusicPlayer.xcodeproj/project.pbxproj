@@ -29,6 +29,8 @@
 		8B7A6FD329E5B73D00F1C2D3 /* PlaylistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FB329E5B73D00F1C2D4 /* PlaylistDetailView.swift */; };
 		8B7A6FD429E5B73D00F1C2D3 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FB529E5B73D00F1C2D3 /* CarPlaySceneDelegate.swift */; };
 		8B7A6FD529E5B73D00F1C2D3 /* CarPlay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B7A6FB629E5B73D00F1C2D3 /* CarPlay.framework */; };
+		8B7A6FE029E5B73D00F1C2D3 /* RemoteLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FE129E5B73D00F1C2D3 /* RemoteLibraryService.swift */; };
+		8B7A6FE229E5B73D00F1C2D3 /* RemoteLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FE329E5B73D00F1C2D3 /* RemoteLibraryView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +59,8 @@
 		8B7A6FB529E5B73D00F1C2D3 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		8B7A6FB629E5B73D00F1C2D3 /* CarPlay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CarPlay.framework; path = System/Library/Frameworks/CarPlay.framework; sourceTree = SDKROOT; };
 		8B7A6F2129E5B73D00F1C2D3 /* MusicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B7A6FE129E5B73D00F1C2D3 /* RemoteLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteLibraryService.swift; sourceTree = "<group>"; };
+		8B7A6FE329E5B73D00F1C2D3 /* RemoteLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteLibraryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +136,7 @@
 				8B7A6FA929E5B73D00F1C2D3 /* MusicLibraryService.swift */,
 				8B7A6FAA29E5B73D00F1C2D3 /* FileImportService.swift */,
 				8B7A6FAB29E5B73D00F1C2D3 /* LyricParserService.swift */,
+				8B7A6FE129E5B73D00F1C2D3 /* RemoteLibraryService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -162,6 +167,7 @@
 				8B7A6FAE29E5B73D00F1C2D3 /* LibraryView.swift */,
 				8B7A6FAF29E5B73D00F1C2D3 /* SongsListView.swift */,
 				8B7A6FB329E5B73D00F1C2D4 /* PlaylistDetailView.swift */,
+				8B7A6FE329E5B73D00F1C2D3 /* RemoteLibraryView.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -269,6 +275,8 @@
 				8B7A6FD129E5B73D00F1C2D3 /* ProfileView.swift in Sources */,
 				8B7A6FD329E5B73D00F1C2D3 /* PlaylistDetailView.swift in Sources */,
 				8B7A6FD429E5B73D00F1C2D3 /* CarPlaySceneDelegate.swift in Sources */,
+				8B7A6FE029E5B73D00F1C2D3 /* RemoteLibraryService.swift in Sources */,
+				8B7A6FE229E5B73D00F1C2D3 /* RemoteLibraryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -71,7 +71,7 @@ struct SettingsView: View {
                                         .font(.system(size: 15))
                                         .foregroundColor(.white)
                                     Spacer()
-                                    Text(remoteLibrary.serverURL.isEmpty ? "未配置" : remoteLibrary.serverURL)
+                                    Text(remoteLibrary.jsonURL.isEmpty ? "未配置" : remoteLibrary.jsonURL)
                                         .font(.system(size: 13))
                                         .foregroundColor(.white.opacity(0.4))
                                         .lineLimit(1)
@@ -106,7 +106,7 @@ struct SettingsView: View {
                 }
             }
             .sheet(isPresented: $showServerConfig) {
-                ServerConfigView()
+                RemoteConfigView()
             }
         }
     }
