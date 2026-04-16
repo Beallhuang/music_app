@@ -14,13 +14,17 @@ struct RemoteLibraryView: View {
 
     @State private var searchText = ""
     @State private var showConfig = false
+    @State private var showFavoritesOnly = false
 
     var filteredSongs: [RemoteSong] {
-        if searchText.isEmpty { return remoteLibrary.songs }
-        return remoteLibrary.songs.filter {
-            $0.title.localizedCaseInsensitiveContains(searchText) ||
-            ($0.artist?.localizedCaseInsensitiveContains(searchText) ?? false)
+        var list = showFavoritesOnly ? remoteLibrary.favoriteSongs : remoteLibrary.songs
+        if !searchText.isEmpty {
+            list = list.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                ($0.artist?.localizedCaseInsensitiveContains(searchText) ?? false)
+            }
         }
+        return list
     }
 
     var body: some View {
@@ -68,6 +72,14 @@ struct RemoteLibraryView: View {
                         .background(Color.white.opacity(0.1))
                         .clipShape(Circle())
                 }
+            }
+            Button(action: { showFavoritesOnly.toggle() }) {
+                Image(systemName: showFavoritesOnly ? "heart.fill" : "heart")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(showFavoritesOnly ? .red : .white)
+                    .frame(width: 36, height: 36)
+                    .background(Color.white.opacity(0.1))
+                    .clipShape(Circle())
             }
             Button(action: { showConfig = true }) {
                 Image(systemName: "doc.badge.gearshape")
@@ -211,7 +223,14 @@ struct RemoteSongRowView: View {
             }
 
             Spacer()
-            downloadButton
+            HStack(spacing: 8) {
+                Button(action: { remoteLibrary.toggleFavorite(song) }) {
+                    Image(systemName: song.isFavorite ? "heart.fill" : "heart")
+                        .font(.system(size: 18))
+                        .foregroundColor(song.isFavorite ? .red : .white.opacity(0.3))
+                }
+                downloadButton
+            }
         }
         .padding(.horizontal, 15).padding(.vertical, 8)
         .background(Color.white.opacity(0.03))

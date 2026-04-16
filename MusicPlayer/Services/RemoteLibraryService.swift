@@ -37,6 +37,7 @@ struct RemoteSong: Identifiable, Codable, Equatable {
     var artwork: Data?     // 已加载的封面数据
     var isDownloaded: Bool
     var localURL: URL?
+    var isFavorite: Bool
 
     init(
         id: UUID = UUID(),
@@ -49,7 +50,8 @@ struct RemoteSong: Identifiable, Codable, Equatable {
         artworkURL: URL? = nil,
         artwork: Data? = nil,
         isDownloaded: Bool = false,
-        localURL: URL? = nil
+        localURL: URL? = nil,
+        isFavorite: Bool = false
     ) {
         self.id = id
         self.title = title
@@ -62,6 +64,7 @@ struct RemoteSong: Identifiable, Codable, Equatable {
         self.artwork = artwork
         self.isDownloaded = isDownloaded
         self.localURL = localURL
+        self.isFavorite = isFavorite
     }
 
     var playbackURL: URL { localURL ?? remoteURL }
@@ -76,7 +79,7 @@ struct RemoteSong: Identifiable, Codable, Equatable {
             fileURL: playbackURL,
             artwork: artwork,
             dateAdded: Date(),
-            isFavorite: false
+            isFavorite: isFavorite
         )
     }
 
@@ -109,17 +112,20 @@ class RemoteLibraryService: NSObject, ObservableObject {
 
     private var urlSession: URLSession!
     private var downloadTasks: [UUID: URLSessionDownloadTask] = [:]
-    private let cacheDirectory: URL
+
+    private var musicDirectory: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let dir = docs.appendingPathComponent("Music", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
 
     private override init() {
         jsonURL = UserDefaults.standard.string(forKey: "remoteLibraryJSONURL") ?? ""
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        cacheDirectory = docs.appendingPathComponent("RemoteCache", isDirectory: true)
         super.init()
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
         urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
-        try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
         loadCachedSongs()
     }
 
@@ -152,6 +158,7 @@ class RemoteLibraryService: NSObject, ObservableObject {
                         merged.isDownloaded = existing.isDownloaded
                         merged.localURL = existing.localURL
                         merged.artwork = existing.artwork
+                        merged.isFavorite = existing.isFavorite
                         return merged
                     }
                     return new
@@ -247,6 +254,27 @@ class RemoteLibraryService: NSObject, ObservableObject {
         } catch { return nil }
     }
 
+    func toggleFavorite(_ song: RemoteSong) {
+        guard let idx = songs.firstIndex(where: { $0.id == song.id }) else { return }
+        songs[idx].isFavorite.toggle()
+        saveCachedSongs()
+    }
+
+    var favoriteSongs: [RemoteSong] { songs.filter { $0.isFavorite } }
+
+    var downloadedSongs: [RemoteSong] { songs.filter { $0.isDownloaded } }
+
+    func removeAllCache() {
+        for song in downloadedSongs { removeCache(for: song) }
+    }
+
+    var cacheSize: Int64 {
+        downloadedSongs.compactMap { $0.localURL }.reduce(0) { total, url in
+            let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+            return total + Int64(size)
+        }
+    }
+
     // MARK: - Download / Cache
 
     func downloadSong(_ song: RemoteSong) {
@@ -267,6 +295,8 @@ class RemoteLibraryService: NSObject, ObservableObject {
         guard let idx = songs.firstIndex(where: { $0.id == song.id }),
               let localURL = songs[idx].localURL else { return }
         try? FileManager.default.removeItem(at: localURL)
+        removeLyricCache(for: song)
+        MusicLibraryService.shared.removeSong(Song(id: song.id, title: song.title, fileURL: localURL))
         songs[idx].localURL = nil
         songs[idx].isDownloaded = false
         downloadStates.removeValue(forKey: song.id)
@@ -297,8 +327,30 @@ class RemoteLibraryService: NSObject, ObservableObject {
         await MainActor.run { errorMessage = message; isLoading = false }
     }
 
-    private func cacheURL(for song: RemoteSong) -> URL {
-        cacheDirectory.appendingPathComponent("\(song.id.uuidString).\(song.remoteURL.pathExtension)")
+    private func destURL(for song: RemoteSong) -> URL {
+        musicDirectory.appendingPathComponent("\(song.id.uuidString).\(song.remoteURL.pathExtension)")
+    }
+
+    private var lyricsDirectory: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let dir = docs.appendingPathComponent("Lyrics", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
+
+    private func downloadLyricIfNeeded(for song: RemoteSong) {
+        guard let lyricURL = song.lyricURL else { return }
+        let dest = lyricsDirectory.appendingPathComponent("\(song.id.uuidString).lrc")
+        guard !FileManager.default.fileExists(atPath: dest.path) else { return }
+        Task {
+            guard let (data, _) = try? await urlSession.data(from: lyricURL) else { return }
+            try? data.write(to: dest)
+        }
+    }
+
+    func removeLyricCache(for song: RemoteSong) {
+        let dest = lyricsDirectory.appendingPathComponent("\(song.id.uuidString).lrc")
+        try? FileManager.default.removeItem(at: dest)
     }
 }
 
@@ -309,18 +361,30 @@ extension RemoteLibraryService: URLSessionDownloadDelegate {
                     didFinishDownloadingTo location: URL) {
         guard let songID = downloadTasks.first(where: { $0.value == downloadTask })?.key,
               let idx = songs.firstIndex(where: { $0.id == songID }) else { return }
-        let dest = cacheURL(for: songs[idx])
+        let dest = destURL(for: songs[idx])
         do {
             if FileManager.default.fileExists(atPath: dest.path) {
                 try FileManager.default.removeItem(at: dest)
             }
             try FileManager.default.moveItem(at: location, to: dest)
+            let song = songs[idx]
             DispatchQueue.main.async {
                 self.songs[idx].localURL = dest
                 self.songs[idx].isDownloaded = true
                 self.downloadStates[songID] = .completed
                 self.downloadTasks.removeValue(forKey: songID)
                 self.saveCachedSongs()
+                // 注册到本地音乐库，与导入音乐统一管理
+                var localSong = song.toSong()
+                localSong = Song(
+                    id: localSong.id, title: localSong.title, artist: localSong.artist,
+                    album: localSong.album, duration: localSong.duration,
+                    fileURL: dest, artwork: localSong.artwork,
+                    dateAdded: localSong.dateAdded, isFavorite: localSong.isFavorite
+                )
+                MusicLibraryService.shared.addSong(localSong)
+                // 同步下载歌词到 Lyrics 目录
+                self.downloadLyricIfNeeded(for: song)
             }
         } catch {
             DispatchQueue.main.async {

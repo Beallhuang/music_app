@@ -47,7 +47,7 @@ struct SettingsView: View {
                         SettingsGroupView(title: "存储") {
                             SettingsValueView(title: "缓存大小", value: calculateCacheSize())
                             Button(action: {
-                                clearCache()
+                                remoteLibrary.removeAllCache()
                             }) {
                                 HStack {
                                     Text("清除缓存")
@@ -113,30 +113,10 @@ struct SettingsView: View {
 
     // MARK: - Helper Methods
     private func calculateCacheSize() -> String {
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return "0 MB"
-        }
-        let musicDirectory = documentsDirectory.appendingPathComponent("Music")
-
-        var totalSize: Int64 = 0
-
-        if let enumerator = FileManager.default.enumerator(at: musicDirectory, includingPropertiesForKeys: [.fileSizeKey]) {
-            for case let fileURL as URL in enumerator {
-                if let fileSize = try? fileURL.resourceValues(forKeys: [.fileSizeKey]).fileSize {
-                    totalSize += Int64(fileSize)
-                }
-            }
-        }
-
         let formatter = ByteCountFormatter()
         formatter.allowedUnits = [.useKB, .useMB, .useGB]
         formatter.countStyle = .file
-
-        return formatter.string(fromByteCount: totalSize)
-    }
-
-    private func clearCache() {
-        // 清除缓存逻辑
+        return formatter.string(fromByteCount: remoteLibrary.cacheSize)
     }
 }
 
