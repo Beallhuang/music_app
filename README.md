@@ -1,6 +1,6 @@
-# 🎵 MusicPlayer - iOS 音乐播放器
+# 🎵 MusicPlayer - iOS Music Player
 
-一个现代化的 iOS 本地音乐播放器，使用 SwiftUI 开发，支持导入本地音乐和歌词显示。
+A modern iOS local music player developed with SwiftUI, supporting local music import and lyrics display.
 
 ![Platform](https://img.shields.io/badge/Platform-iOS%2015%2B-blue)
 ![Swift](https://img.shields.io/badge/Swift-5.7-orange)
@@ -8,208 +8,201 @@
 
 ---
 
-## ✨ 功能特性
+## ✨ Features
 
-### 🎶 音乐播放
-- 支持导入本地音乐文件（MP3、M4A、FLAC、WAV、AAC）
-- 播放控制：播放/暂停、上下曲、进度拖拽
-- 播放模式：随机播放、单曲循环、列表循环
-- 后台播放支持，锁屏控制
+### 🎶 Music Playback
+- Import local music files (MP3, M4A, FLAC, WAV, AAC)
+- Playback controls: play/pause, previous/next, seek
+- Playback modes: shuffle, single repeat, list repeat
+- Background playback support with lock screen controls
 
-### 📝 歌词显示
-- 支持 .lrc 歌词文件解析
-- 实时同步滚动显示
-- 当前行高亮效果
-- 支持翻译歌词显示
+### 📝 Lyrics Display
+- Support for .lrc lyrics file parsing
+- Real-time synchronized scrolling
+- Current line highlighting
+- Translated lyrics support
 
-### 🎨 现代化 UI
-- 深色主题设计
-- 毛玻璃效果
-- 流畅动画过渡
-- 可自定义强调色（6种颜色可选）
+### 🎨 Modern UI
+- Dark theme design
+- Blur glass effect
+- Smooth animation transitions
+- Customizable accent colors (6 options)
 
-### 📚 音乐库管理
-- 歌曲分类（全部、专辑、艺术家、歌单）
-- 创建自定义歌单
-- 收藏功能
-- 最近播放记录
-- 搜索功能
+### 📚 Music Library Management
+- Song categorization (All, Albums, Artists, Playlists)
+- Create custom playlists
+- Favorites feature
+- Recently played history
+- Search functionality
 
-### ⚙️ 个性化设置
-- 深浅色主题切换
-- 歌词字体大小调整
-- 专辑封面模糊背景效果
+### ⚙️ Personalization Settings
+- Light/dark theme toggle
+- Lyrics font size adjustment
+- Album cover blur background effect
 
 ---
 
-## 📱 界面预览
+## 📱 Interface Preview
 
-| 播放界面 | 音乐库 | 设置 |
+| Player View | Music Library | Settings |
 |:---:|:---:|:---:|
-| 播放界面 | 歌曲列表 | 主题设置 |
+| Player interface with controls | Song list view | Theme preferences |
 
 ---
 
-## 🚀 安装方式
+## 🚀 Installation
 
-### 方式一：免费签名安装（推荐）
+### Option 1: Free Signing Installation (Recommended)
 
-使用 Apple ID 免费签名安装，详见 [免费安装指南](FREE_INSTALL_GUIDE.md)
+Use your Apple ID for free signing installation. See [Free Installation Guide](FREE_INSTALL_GUIDE.md) for details.
 
-**简要步骤：**
-1. 上传代码到 GitHub
-2. GitHub Actions 自动编译生成 IPA
-3. 下载 [Sideloadly](https://sideloadly.io/)
-4. 连接 iPhone，用 Apple ID 签名安装
-5. 在设置中信任开发者
+**Quick Steps:**
+1. Upload the code to GitHub
+2. GitHub Actions automatically compiles and generates IPA
+3. Download [Sideloadly](https://sideloadly.io/)
+4. Connect your iPhone and sign with Apple ID
+5. Trust the developer in Settings
 
-⚠️ **注意**：免费签名每 7 天需重新签名一次
+⚠️ **Note**: Free signing requires re-signing every 7 days
 
-### 方式二：开发者账号
+### Option 2: Developer Account
 
-如果你有 Apple Developer Program 账号（¥688/年）：
-1. 用 Xcode 打开项目
-2. 配置你的 Team 和 Bundle ID
-3. 直接安装到设备
+If you have an Apple Developer Program account (¥688/year):
+1. Open the project in Xcode
+2. Configure your Team and Bundle ID
+3. Install directly to your device
 
 ---
 
-## 🛠️ 开发环境
+## 🛠️ Development Environment
 
-| 要求 | 版本 |
-|------|------|
+| Requirement | Version |
+|-------------|---------|
 | Xcode | 14.0+ |
 | Swift | 5.7+ |
 | iOS Deployment Target | 15.0+ |
-| macOS | 12.0+（开发需要） |
+| macOS | 12.0+ (for development) |
 
 ---
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 MusicPlayer/
-├── Models/                      # 数据模型层
-│   ├── Song.swift              # 歌曲模型
-│   ├── Album.swift             # 专辑模型
-│   ├── Artist.swift            # 艺术家模型
-│   ├── Playlist.swift          # 歌单模型
-│   ├── LyricLine.swift         # 歌词模型
-│   └── AppTheme.swift          # 主题配置
+├── Models/                      # Data Model Layer
+│   ├── Song.swift              # Song model
+│   ├── Album.swift             # Album model
+│   ├── Artist.swift            # Artist model
+│   ├── Playlist.swift          # Playlist model
+│   ├── LyricLine.swift         # Lyrics model
+│   └── AppTheme.swift          # Theme configuration
 │
-├── Services/                    # 服务层
-│   ├── MusicPlayerService.swift    # 核心播放服务
-│   ├── MusicLibraryService.swift   # 音乐库管理
-│   ├── FileImportService.swift     # 文件导入
-│   └── LyricParserService.swift    # 歌词解析
+├── Services/                    # Service Layer
+│   ├── MusicPlayerService.swift    # Core playback service
+│   ├── MusicLibraryService.swift   # Music library management
+│   ├── FileImportService.swift     # File import
+│   └── LyricParserService.swift    # Lyrics parsing
 │
-├── Views/                       # 视图层
-│   ├── Player/                 # 播放器界面
+├── Views/                       # View Layer
+│   ├── Player/                 # Player interface
 │   │   ├── PlayerView.swift
 │   │   └── MiniPlayerView.swift
-│   ├── Library/                # 音乐库界面
+│   ├── Library/                # Music library interface
 │   │   ├── LibraryView.swift
 │   │   └── SongsListView.swift
-│   ├── Settings/               # 设置界面
+│   ├── Settings/               # Settings interface
 │   │   └── SettingsView.swift
-│   └── Profile/                # 个人中心
+│   └── Profile/                # Profile center
 │       └── ProfileView.swift
 │
-├── Assets.xcassets/            # 资源文件
-├── ContentView.swift           # 主视图容器
-├── MusicPlayerApp.swift        # 应用入口
-└── Info.plist                 # 应用配置
+├── Assets.xcassets/            # Asset files
+├── ContentView.swift           # Main view container
+├── MusicPlayerApp.swift        # App entry point
+└── Info.plist                  # App configuration
 ```
 
 ---
 
-## 🔧 技术栈
+## 🔧 Tech Stack
 
-- **UI 框架**：SwiftUI
-- **音频播放**：AVFoundation
-- **后台播放**：AVAudioSession + MediaPlayer Framework
-- **数据存储**：UserDefaults + Codable
-- **文件导入**：UIDocumentPickerViewController
-- **歌词解析**：正则表达式解析 LRC 格式
+- **UI Framework**: SwiftUI
+- **Audio Playback**: AVFoundation
+- **Background Playback**: AVAudioSession + MediaPlayer Framework
+- **Data Storage**: UserDefaults + Codable
+- **File Import**: UIDocumentPickerViewController
+- **Lyrics Parsing**: Regex-based LRC format parsing
 
 ---
 
-## 📖 使用说明
+## 📖 Usage Guide
 
-### 导入音乐
+### Importing Music
 
-1. 打开应用，进入「音乐库」页面
-2. 点击右上角 **+** 按钮
-3. 选择本地音乐文件（支持多选）
-4. 等待导入完成
+1. Open the app and go to "Music Library"
+2. Tap the **+** button in the top right corner
+3. Select local music files (multiple selection supported)
+4. Wait for import to complete
 
-### 使用歌词
+### Using Lyrics
 
-将 `.lrc` 歌词文件与音乐文件放在同一目录，文件名相同：
+Place `.lrc` lyrics files in the same directory as music files with matching filenames:
 
 ```
 /Music/
-  ├── 夜曲.mp3
-  └── 夜曲.lrc   ← 自动匹配
+  ├── Song.mp3
+  └── Song.lrc   ← Automatically matched
 ```
 
-歌词文件格式示例：
+Lyrics file format example:
 ```
-[ti:夜曲]
-[ar:周杰伦]
-[al:十一月的萧邦]
-[00:01.23]为你弹奏萧邦的夜曲
-[00:05.45]纪念我死去的爱情
+[ti:Song Title]
+[ar:Artist Name]
+[al:Album Name]
+[00:01.23]First lyrics line
+[00:05.45]Second lyrics line
 ```
 
-### 创建歌单
+### Creating Playlists
 
-1. 进入「音乐库」→「歌单」标签
-2. 点击「创建新歌单」
-3. 输入歌单名称
-4. 长按歌曲可添加到歌单
-
----
-
-## 🔄 GitHub Actions 自动构建
-
-本项目已配置 GitHub Actions，推送代码后会自动编译：
-
-1. Fork 本仓库
-2. 进入 Actions 页面
-3. 等待构建完成
-4. 在 Releases 或 Artifacts 下载 IPA
+1. Go to "Music Library" → "Playlists" tab
+2. Tap "Create New Playlist"
+3. Enter playlist name
+4. Long press a song to add it to a playlist
 
 ---
 
-## 🤝 参与贡献
+## 🔄 GitHub Actions Auto Build
 
-欢迎提交 Issue 和 Pull Request！
+This project is configured with GitHub Actions for automatic compilation on push:
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
-
----
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+1. Fork this repository
+2. Go to the Actions page
+3. Wait for the build to complete
+4. Download the IPA from Releases or Artifacts
 
 ---
 
-## 🙏 致谢
+## 🤝 Contributing
 
-- [SwiftUI](https://developer.apple.com/xcode/swiftui/) - Apple 的现代 UI 框架
-- [AVFoundation](https://developer.apple.com/av-foundation/) - Apple 的音视频框架
+Issues and Pull Requests are welcome!
+
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Submit a Pull Request
 
 ---
 
-## 📞 联系方式
+## 📄 License
 
-如有问题或建议，欢迎提交 [Issue](../../issues)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 Contact
+
+For questions or suggestions, please submit an [Issue](https://github.com/beallhuang/music_app/issues).
 
 ---
 
