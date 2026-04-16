@@ -203,19 +203,13 @@ struct ProfileView: View {
                     .foregroundColor(.white)
 
                 Spacer()
-
-                Button("查看详情") {
-                    // 导航到详情
-                }
-                .font(.system(size: 13))
-                .foregroundColor(theme.accentColor.color)
             }
             .padding(.horizontal, 15)
 
             HStack(spacing: 15) {
-                HistoryItemView(title: "今天", value: "12首")
-                HistoryItemView(title: "本周", value: "45首")
-                HistoryItemView(title: "本月", value: "128首")
+                HistoryItemView(title: "总歌曲", value: "\(library.totalSongCount)首")
+                HistoryItemView(title: "收藏", value: "\(library.favorites.count)首")
+                HistoryItemView(title: "最近播放", value: "\(library.recentlyPlayed.count)首")
             }
             .padding(.horizontal, 15)
         }

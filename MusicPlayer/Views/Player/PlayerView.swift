@@ -42,11 +42,11 @@ struct PlayerView: View {
                     .padding(.top, 20)
                     .padding(.horizontal, 20)
 
-                // 歌词区域（撑满中间空间，保留底部控件空间）
+                // 歌词区域（固定高度，保留底部控件空间）
                 if theme.showLyrics {
                     lyricsView
                         .padding(.top, 16)
-                        .layoutPriority(1)
+                        .frame(maxHeight: UIScreen.main.bounds.height * 0.38)
                 } else {
                     Spacer()
                 }
@@ -267,7 +267,6 @@ struct PlayerView: View {
                 .padding(.vertical, 20)
                 .padding(.horizontal, 20)
             }
-            .frame(maxHeight: .infinity)
             .onAppear {
                 lyricsScrollProxy = proxy
             }
