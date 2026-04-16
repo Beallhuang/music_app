@@ -10,6 +10,9 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var theme = AppTheme.shared
     @StateObject private var library = MusicLibraryService.shared
+    @StateObject private var remoteLibrary = RemoteLibraryService.shared
+
+    @State private var showServerConfig = false
 
     var body: some View {
         NavigationView {
@@ -60,6 +63,29 @@ struct SettingsView: View {
                             }
                         }
 
+                        // 在线音乐
+                        SettingsGroupView(title: "在线音乐") {
+                            Button(action: { showServerConfig = true }) {
+                                HStack {
+                                    Text("服务器地址")
+                                        .font(.system(size: 15))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Text(remoteLibrary.serverURL.isEmpty ? "未配置" : remoteLibrary.serverURL)
+                                        .font(.system(size: 13))
+                                        .foregroundColor(.white.opacity(0.4))
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                        .frame(maxWidth: 160, alignment: .trailing)
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.3))
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 12)
+                            }
+                        }
+
                         // 关于
                         SettingsGroupView(title: "关于") {
                             SettingsValueView(title: "版本", value: "1.0.0")
@@ -78,6 +104,9 @@ struct SettingsView: View {
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(.white)
                 }
+            }
+            .sheet(isPresented: $showServerConfig) {
+                ServerConfigView()
             }
         }
     }

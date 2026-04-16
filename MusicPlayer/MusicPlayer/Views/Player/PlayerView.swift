@@ -67,13 +67,32 @@ struct PlayerView: View {
         }
         .onAppear {
             if let song = player.currentSong {
-                lyrics = LyricParserService.shared.loadLyrics(for: song)
+                loadLyrics(for: song)
             }
         }
         .onChange(of: player.currentSong) { newSong in
             if let song = newSong {
-                lyrics = LyricParserService.shared.loadLyrics(for: song)
+                loadLyrics(for: song)
                 library.addToRecentlyPlayed(song)
+            }
+        }
+    }
+
+    private func loadLyrics(for song: Song) {
+        // 先尝试本地歌词
+        if let local = LyricParserService.shared.loadLyrics(for: song) {
+            lyrics = local
+            return
+        }
+        // 再尝试远程歌词（通过 RemoteLibraryService 匹配）
+        let remoteLibrary = RemoteLibraryService.shared
+        if let remoteSong = remoteLibrary.songs.first(where: { $0.id == song.id }),
+           remoteSong.lyricURL != nil {
+            Task {
+                if let content = await remoteLibrary.loadRemoteLyrics(for: remoteSong),
+                   let parsed = LyricParserService.shared.loadRemoteLyrics(content: content) {
+                    await MainActor.run { lyrics = parsed }
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ struct ContentView: View {
     enum Tab: String, CaseIterable {
         case player = "播放"
         case library = "音乐库"
+        case remote = "在线"
         case settings = "设置"
         case profile = "我的"
 
@@ -23,6 +24,7 @@ struct ContentView: View {
             switch self {
             case .player: return "play.circle.fill"
             case .library: return "music.note.list"
+            case .remote: return "cloud.fill"
             case .settings: return "gearshape.fill"
             case .profile: return "person.fill"
             }
@@ -38,6 +40,8 @@ struct ContentView: View {
                     PlayerView()
                 case .library:
                     LibraryView()
+                case .remote:
+                    RemoteLibraryView()
                 case .settings:
                     SettingsView()
                 case .profile:

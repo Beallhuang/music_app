@@ -175,4 +175,10 @@ class LyricParserService {
         guard let lrcURL = findLyricFile(for: song) else { return nil }
         return parseLrcFile(from: lrcURL)
     }
+
+    /// 解析远程歌词内容（异步，已由 RemoteLibraryService 下载为字符串）
+    func loadRemoteLyrics(content: String) -> Lyrics? {
+        let lyrics = parseLrcContent(content)
+        return lyrics.lines.isEmpty ? nil : lyrics
+    }
 }
