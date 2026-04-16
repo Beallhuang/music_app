@@ -45,7 +45,7 @@ struct PlayerView: View {
                 // 歌词区域（固定高度，保留底部控件空间）
                 if theme.showLyrics {
                     lyricsView
-                        .padding(.top, 16)
+                        .padding(.top, 8)
                         .frame(maxHeight: UIScreen.main.bounds.height * 0.38)
                 } else {
                     Spacer()
@@ -127,18 +127,44 @@ struct PlayerView: View {
 
     // MARK: - Song Info
     private var songInfoView: some View {
-        VStack(spacing: 8) {
-            Text(player.currentSong?.title ?? "未播放歌曲")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .lineLimit(1)
+        VStack(spacing: 16) {
+            // 封面图
+            Group {
+                if let artwork = player.currentSong?.artwork, let uiImage = UIImage(data: artwork) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    ZStack {
+                        LinearGradient(
+                            colors: [Color.gray.opacity(0.5), Color.gray.opacity(0.3)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        Image(systemName: "music.note")
+                            .font(.system(size: 48))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                }
+            }
+            .frame(width: UIScreen.main.bounds.width * 0.72, height: UIScreen.main.bounds.width * 0.72)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.4), radius: 20, x: 0, y: 10)
 
-            if let artist = player.currentSong?.artist {
-                Text("\(artist)\(player.currentSong?.album.map { " · \($0)" } ?? "")")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.6))
+            // 歌曲标题 & 艺术家
+            VStack(spacing: 6) {
+                Text(player.currentSong?.title ?? "未播放歌曲")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
                     .lineLimit(1)
+
+                if let artist = player.currentSong?.artist {
+                    Text("\(artist)\(player.currentSong?.album.map { " · \($0)" } ?? "")")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.6))
+                        .lineLimit(1)
+                }
             }
         }
     }
