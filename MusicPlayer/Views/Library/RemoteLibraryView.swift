@@ -63,12 +63,11 @@ struct RemoteLibraryView: View {
                 Button(action: { Task { await remoteLibrary.fetchLibrary() } }) {
                     Image(systemName: "arrow.clockwise")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(remoteLibrary.isLoading ? .white.opacity(0.3) : .white)
+                        .foregroundColor(.white)
                         .frame(width: 36, height: 36)
                         .background(Color.white.opacity(0.1))
                         .clipShape(Circle())
                 }
-                .disabled(remoteLibrary.isLoading)
             }
             Button(action: { showConfig = true }) {
                 Image(systemName: "doc.badge.gearshape")

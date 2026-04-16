@@ -133,7 +133,10 @@ class RemoteLibraryService: NSObject, ObservableObject {
         await MainActor.run { isLoading = true; errorMessage = nil }
 
         do {
-            let (data, response) = try await urlSession.data(from: url)
+            // 禁用缓存，确保每次都从服务器拉取最新 JSON
+            var request = URLRequest(url: url)
+            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+            let (data, response) = try await urlSession.data(for: request)
             guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
                 throw URLError(.badServerResponse)
             }
