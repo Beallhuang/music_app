@@ -42,10 +42,11 @@ struct PlayerView: View {
                     .padding(.top, 20)
                     .padding(.horizontal, 20)
 
-                // 歌词区域（撑满中间空间）
+                // 歌词区域（撑满中间空间，保留底部控件空间）
                 if theme.showLyrics {
                     lyricsView
                         .padding(.top, 16)
+                        .layoutPriority(1)
                 } else {
                     Spacer()
                 }
@@ -58,7 +59,7 @@ struct PlayerView: View {
                 // 播放控制
                 controlsView
                     .padding(.top, 20)
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 40)
             }
         }
         .onAppear {

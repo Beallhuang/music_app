@@ -45,12 +45,24 @@ struct SettingsView: View {
 
                         // 存储
                         SettingsGroupView(title: "存储") {
-                            SettingsValueView(title: "缓存大小", value: calculateCacheSize())
-                            Button(action: {
-                                remoteLibrary.removeAllCache()
-                            }) {
+                            SettingsValueView(title: "音乐缓存", value: calculateCacheSize())
+                            Button(action: { remoteLibrary.removeAllCache() }) {
                                 HStack {
-                                    Text("清除缓存")
+                                    Text("清除音乐缓存")
+                                        .font(.system(size: 15))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Text("清除")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(Color(hex: "FF6B6B"))
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 12)
+                            }
+                            SettingsValueView(title: "歌词缓存", value: calculateLyricCacheSize())
+                            Button(action: { remoteLibrary.removeAllLyricCache() }) {
+                                HStack {
+                                    Text("清除歌词缓存")
                                         .font(.system(size: 15))
                                         .foregroundColor(.white)
                                     Spacer()
@@ -117,6 +129,13 @@ struct SettingsView: View {
         formatter.allowedUnits = [.useKB, .useMB, .useGB]
         formatter.countStyle = .file
         return formatter.string(fromByteCount: remoteLibrary.cacheSize)
+    }
+
+    private func calculateLyricCacheSize() -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = [.useKB, .useMB, .useGB]
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: remoteLibrary.lyricCacheSize)
     }
 }
 

@@ -178,6 +178,9 @@ struct RemoteLibraryView: View {
 
     private func playSong(_ remoteSong: RemoteSong) {
         player.play(song: remoteSong.toSong(), in: filteredSongs.map { $0.toSong() })
+        if !remoteSong.isDownloaded {
+            remoteLibrary.downloadSong(remoteSong)
+        }
     }
 }
 
@@ -188,8 +191,6 @@ struct RemoteSongRowView: View {
     @StateObject private var remoteLibrary = RemoteLibraryService.shared
     @ObservedObject private var player = MusicPlayerService.shared
     @ObservedObject private var theme = AppTheme.shared
-
-    var downloadState: DownloadState? { remoteLibrary.downloadStates[song.id] }
 
     var body: some View {
         HStack(spacing: 12) {
@@ -223,39 +224,16 @@ struct RemoteSongRowView: View {
             }
 
             Spacer()
-            HStack(spacing: 8) {
-                Button(action: { remoteLibrary.toggleFavorite(song) }) {
-                    Image(systemName: song.isFavorite ? "heart.fill" : "heart")
-                        .font(.system(size: 18))
-                        .foregroundColor(song.isFavorite ? .red : .white.opacity(0.3))
-                }
-                downloadButton
+            Button(action: { remoteLibrary.toggleFavorite(song) }) {
+                Image(systemName: song.isFavorite ? "heart.fill" : "heart")
+                    .font(.system(size: 18))
+                    .foregroundColor(song.isFavorite ? .red : .white.opacity(0.3))
             }
         }
         .padding(.horizontal, 15).padding(.vertical, 8)
         .background(Color.white.opacity(0.03))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal, 15).padding(.vertical, 2)
-    }
-
-    @ViewBuilder
-    private var downloadButton: some View {
-        if song.isDownloaded {
-            Image(systemName: "checkmark.circle.fill").font(.system(size: 20)).foregroundColor(.green.opacity(0.8))
-        } else if case .downloading(let progress) = downloadState {
-            ZStack {
-                Circle().stroke(Color.white.opacity(0.2), lineWidth: 2).frame(width: 24, height: 24)
-                Circle().trim(from: 0, to: progress).stroke(theme.accentColor.color, lineWidth: 2)
-                    .frame(width: 24, height: 24).rotationEffect(.degrees(-90))
-                Button(action: { remoteLibrary.cancelDownload(song) }) {
-                    Image(systemName: "xmark").font(.system(size: 8, weight: .bold)).foregroundColor(.white.opacity(0.6))
-                }
-            }
-        } else {
-            Button(action: { remoteLibrary.downloadSong(song) }) {
-                Image(systemName: "arrow.down.circle").font(.system(size: 20)).foregroundColor(.white.opacity(0.4))
-            }
-        }
     }
 }
 

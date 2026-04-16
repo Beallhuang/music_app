@@ -173,6 +173,11 @@ class MusicLibraryService: ObservableObject {
             playlists[i].removeSong(withId: song.id)
         }
 
+        // 同步清除远程缓存状态
+        if let remoteSong = RemoteLibraryService.shared.songs.first(where: { $0.id == song.id }) {
+            RemoteLibraryService.shared.removeCache(for: remoteSong, syncLibrary: false)
+        }
+
         organizeData()
         saveData()
     }

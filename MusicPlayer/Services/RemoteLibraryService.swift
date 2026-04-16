@@ -291,12 +291,14 @@ class RemoteLibraryService: NSObject, ObservableObject {
         downloadStates.removeValue(forKey: song.id)
     }
 
-    func removeCache(for song: RemoteSong) {
+    func removeCache(for song: RemoteSong, syncLibrary: Bool = true) {
         guard let idx = songs.firstIndex(where: { $0.id == song.id }),
               let localURL = songs[idx].localURL else { return }
         try? FileManager.default.removeItem(at: localURL)
         removeLyricCache(for: song)
-        MusicLibraryService.shared.removeSong(Song(id: song.id, title: song.title, fileURL: localURL))
+        if syncLibrary {
+            MusicLibraryService.shared.removeSong(Song(id: song.id, title: song.title, fileURL: localURL))
+        }
         songs[idx].localURL = nil
         songs[idx].isDownloaded = false
         downloadStates.removeValue(forKey: song.id)
@@ -351,6 +353,18 @@ class RemoteLibraryService: NSObject, ObservableObject {
     func removeLyricCache(for song: RemoteSong) {
         let dest = lyricsDirectory.appendingPathComponent("\(song.id.uuidString).lrc")
         try? FileManager.default.removeItem(at: dest)
+    }
+
+    func removeAllLyricCache() {
+        try? FileManager.default.removeItem(at: lyricsDirectory)
+    }
+
+    var lyricCacheSize: Int64 {
+        guard let enumerator = FileManager.default.enumerator(at: lyricsDirectory, includingPropertiesForKeys: [.fileSizeKey]) else { return 0 }
+        return enumerator.compactMap { $0 as? URL }.reduce(0) { total, url in
+            let size = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+            return total + Int64(size)
+        }
     }
 }
 

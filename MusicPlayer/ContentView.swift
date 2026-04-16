@@ -55,7 +55,7 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     MiniPlayerView()
-                        .padding(.bottom, 70)
+                        .padding(.bottom, 90)
                         .onTapGesture {
                             selectedTab = .player
                         }
