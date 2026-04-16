@@ -150,6 +150,12 @@ class MusicPlayerService: NSObject, ObservableObject {
 
         currentSong = song
 
+        // 先移除旧 player 的 time observer，再替换 player
+        if let observer = timeObserver {
+            player?.removeTimeObserver(observer)
+            timeObserver = nil
+        }
+
         let playerItem = AVPlayerItem(url: song.fileURL)
         player = AVPlayer(playerItem: playerItem)
 
@@ -272,12 +278,6 @@ class MusicPlayerService: NSObject, ObservableObject {
 
     // MARK: - Time Observer
     private func setupTimeObserver() {
-        // 移除旧的观察者
-        if let observer = timeObserver {
-            player?.removeTimeObserver(observer)
-            timeObserver = nil
-        }
-
         // 添加新的时间观察者
         let interval = CMTime(seconds: 0.1, preferredTimescale: 600)
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
@@ -288,6 +288,11 @@ class MusicPlayerService: NSObject, ObservableObject {
         // 清除旧的播放完成监听，再重新注册（避免重复触发）
         cancellables.removeAll()
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)
+            .filter { [weak self] notification in
+                guard let currentItem = self?.player?.currentItem else { return false }
+                return (notification.object as? AVPlayerItem) == currentItem
+            }
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.handlePlaybackEnd()
             }
@@ -297,10 +302,18 @@ class MusicPlayerService: NSObject, ObservableObject {
     private func handlePlaybackEnd() {
         switch repeatMode {
         case .one:
-            seek(to: 0)
-            play()
-        case .all, .off:
-            if repeatMode == .all || currentIndex != playlist.count - 1 {
+            let cmTime = CMTime(seconds: 0, preferredTimescale: 600)
+            player?.seek(to: cmTime) { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.player?.play()
+                    self?.isPlaying = true
+                    self?.currentTime = 0
+                }
+            }
+        case .all:
+            playNext()
+        case .off:
+            if currentIndex != playlist.count - 1 {
                 playNext()
             } else {
                 isPlaying = false
