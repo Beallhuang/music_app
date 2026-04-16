@@ -26,6 +26,7 @@
 		8B7A6FD029E5B73D00F1C2D3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FB029E5B73D00F1C2D3 /* SettingsView.swift */; };
 		8B7A6FD129E5B73D00F1C2D3 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FB129E5B73D00F1C2D3 /* ProfileView.swift */; };
 		8B7A6FD229E5B73D00F1C2D3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A6FB229E5B73D00F1C2D3 /* Assets.xcassets */; };
+		8B7A6FD329E5B73D00F1C2D3 /* PlaylistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A6FB329E5B73D00F1C2D4 /* PlaylistDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		8B7A6FB229E5B73D00F1C2D3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B7A6FB329E5B73D00F1C2D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B7A6FB429E5B73D00F1C2D3 /* MusicPlayer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MusicPlayer.entitlements; sourceTree = "<group>"; };
+		8B7A6FB329E5B73D00F1C2D4 /* PlaylistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailView.swift; sourceTree = "<group>"; };
 		8B7A6F2129E5B73D00F1C2D3 /* MusicPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -144,6 +146,7 @@
 			children = (
 				8B7A6FAE29E5B73D00F1C2D3 /* LibraryView.swift */,
 				8B7A6FAF29E5B73D00F1C2D3 /* SongsListView.swift */,
+				8B7A6FB329E5B73D00F1C2D4 /* PlaylistDetailView.swift */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				8B7A6FCF29E5B73D00F1C2D3 /* SongsListView.swift in Sources */,
 				8B7A6FD029E5B73D00F1C2D3 /* SettingsView.swift in Sources */,
 				8B7A6FD129E5B73D00F1C2D3 /* ProfileView.swift in Sources */,
+				8B7A6FD329E5B73D00F1C2D3 /* PlaylistDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
