@@ -39,14 +39,14 @@ struct PlayerView: View {
 
                 // 歌曲信息
                 songInfoView
-                    .padding(.top, 20)
+                    .padding(.top, 10)
                     .padding(.horizontal, 20)
 
                 // 歌词区域（固定高度，保留底部控件空间）
                 if theme.showLyrics {
                     lyricsView
                         .padding(.top, 8)
-                        .frame(maxHeight: UIScreen.main.bounds.height * 0.38)
+                        .frame(maxHeight: UIScreen.main.bounds.height * 0.32)
                 } else {
                     Spacer()
                 }
@@ -122,7 +122,7 @@ struct PlayerView: View {
             }
         }
         .padding(.horizontal, 20)
-        .padding(.top, 50)
+        .padding(.top, 10)
     }
 
     // MARK: - Song Info
@@ -147,7 +147,7 @@ struct PlayerView: View {
                     }
                 }
             }
-            .frame(width: UIScreen.main.bounds.width * 0.72, height: UIScreen.main.bounds.width * 0.72)
+            .frame(width: UIScreen.main.bounds.width * 0.48, height: UIScreen.main.bounds.width * 0.48)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.4), radius: 20, x: 0, y: 10)
 
