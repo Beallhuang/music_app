@@ -335,7 +335,7 @@ struct PlayerView: View {
                         lyricsHeightAtDragStart = theme.lyricsHeight
                     }
                     let newHeight = lyricsHeightAtDragStart + value.translation.height
-                    theme.lyricsHeight = max(60, min(300, newHeight))
+                    theme.lyricsHeight = max(60, min(500, newHeight))
                 }
                 .onEnded { _ in
                     isDraggingLyricsHeight = false
