@@ -12,6 +12,8 @@ struct PlayerView: View {
     @StateObject private var library = MusicLibraryService.shared
     @StateObject private var theme = AppTheme.shared
 
+    var bottomPadding: CGFloat = 0
+
     @State private var isDragging = false
     @State private var dragProgress: Double = 0
     @State private var showFullPlayer = false
@@ -59,7 +61,7 @@ struct PlayerView: View {
                 // 播放控制
                 controlsView
                     .padding(.top, 8)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, bottomPadding + 20)
             }
         }
         .onAppear {

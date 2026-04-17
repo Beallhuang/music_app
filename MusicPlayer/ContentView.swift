@@ -39,8 +39,7 @@ struct ContentView: View {
             Group {
                 switch selectedTab {
                 case .player:
-                    PlayerView()
-                        .padding(.bottom, tabBarHeight)
+                    PlayerView(bottomPadding: tabBarHeight)
                 case .library:
                     LibraryView()
                 case .remote:
