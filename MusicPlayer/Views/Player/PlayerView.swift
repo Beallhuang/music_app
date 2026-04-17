@@ -39,6 +39,8 @@ struct PlayerView: View {
                 // 导航栏
                 navigationBar
 
+                Spacer(minLength: 0)
+
                 // 歌曲信息
                 songInfoView
                     .padding(.top, 10)
@@ -50,7 +52,7 @@ struct PlayerView: View {
                         .padding(.top, 8)
                         .frame(maxHeight: UIScreen.main.bounds.height * 0.32)
                 } else {
-                    Spacer()
+                    Spacer(minLength: 0)
                 }
 
                 // 进度条
