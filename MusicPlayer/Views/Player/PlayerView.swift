@@ -21,49 +21,44 @@ struct PlayerView: View {
     @State private var lyricsScrollProxy: ScrollViewProxy?
 
     var body: some View {
-        ZStack {
-            // 背景模糊效果
+        VStack(spacing: 0) {
+            // 导航栏
+            navigationBar
+
+            // 歌曲信息
+            songInfoView
+                .padding(.top, 10)
+                .padding(.horizontal, 20)
+
+            // 歌词区域（固定高度，保留底部控件空间）
+            if theme.showLyrics {
+                lyricsView
+                    .padding(.top, 8)
+                    .frame(maxHeight: UIScreen.main.bounds.height * 0.32)
+            } else {
+                Spacer(minLength: 0)
+            }
+
+            // 进度条
+            progressView
+                .padding(.top, 8)
+                .padding(.horizontal, 30)
+
+            // 播放控制
+            controlsView
+                .padding(.top, 8)
+                .padding(.bottom, bottomPadding + 20)
+        }
+        .background {
             if theme.albumArtBlurBackground, let artwork = player.currentSong?.artwork, let uiImage = UIImage(data: artwork) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                     .blur(radius: 50)
                     .overlay(Color.black.opacity(0.6))
                     .ignoresSafeArea()
             } else {
                 Color.appBackground.ignoresSafeArea()
-            }
-
-            VStack(spacing: 0) {
-                // 导航栏
-                navigationBar
-
-                Spacer(minLength: 0)
-
-                // 歌曲信息
-                songInfoView
-                    .padding(.top, 10)
-                    .padding(.horizontal, 20)
-
-                // 歌词区域（固定高度，保留底部控件空间）
-                if theme.showLyrics {
-                    lyricsView
-                        .padding(.top, 8)
-                        .frame(maxHeight: UIScreen.main.bounds.height * 0.32)
-                } else {
-                    Spacer(minLength: 0)
-                }
-
-                // 进度条
-                progressView
-                    .padding(.top, 8)
-                    .padding(.horizontal, 30)
-
-                // 播放控制
-                controlsView
-                    .padding(.top, 8)
-                    .padding(.bottom, bottomPadding + 20)
             }
         }
         .onAppear {
