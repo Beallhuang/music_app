@@ -75,7 +75,7 @@ struct ProfileView: View {
                 .font(.system(size: 18, weight: .medium))
                 .foregroundColor(.white)
         }
-        .padding(.top, 30)
+        .padding(.top, 10)
     }
 
     // MARK: - Stats Section

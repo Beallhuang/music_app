@@ -104,7 +104,7 @@ struct SettingsView: View {
                             SettingsLinkView(title: "开源许可")
                         }
                     }
-                    .padding(.top, 60)
+                    .padding(.top, 20)
                     .padding(.bottom, 100)
                 }
             }
