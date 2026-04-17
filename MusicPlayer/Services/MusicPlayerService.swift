@@ -170,6 +170,15 @@ class MusicPlayerService: NSObject, ObservableObject {
         player?.play()
         isPlaying = true
         duration = song.duration
+
+        // 远程歌曲自动缓存：播放时如果未下载，自动触发后台下载
+        if !song.fileURL.isFileURL {
+            let remoteLib = RemoteLibraryService.shared
+            if let remoteSong = remoteLib.songs.first(where: { $0.id == song.id }),
+               !remoteSong.isDownloaded {
+                remoteLib.downloadSong(remoteSong)
+            }
+        }
     }
 
     func play() {

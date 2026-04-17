@@ -178,9 +178,6 @@ struct RemoteLibraryView: View {
 
     private func playSong(_ remoteSong: RemoteSong) {
         player.play(song: remoteSong.toSong(), in: filteredSongs.map { $0.toSong() })
-        if !remoteSong.isDownloaded {
-            remoteLibrary.downloadSong(remoteSong)
-        }
     }
 }
 
