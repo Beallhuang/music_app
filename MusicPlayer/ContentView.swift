@@ -31,6 +31,8 @@ struct ContentView: View {
         }
     }
 
+    @State private var tabBarHeight: CGFloat = 80
+
     var body: some View {
         ZStack {
             // 主内容区域
@@ -38,6 +40,7 @@ struct ContentView: View {
                 switch selectedTab {
                 case .player:
                     PlayerView()
+                        .padding(.bottom, tabBarHeight)
                 case .library:
                     LibraryView()
                 case .remote:
@@ -66,6 +69,11 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 tabBar
+                    .overlay(
+                        GeometryReader { geo in
+                            Color.clear.onAppear { tabBarHeight = geo.size.height }
+                        }
+                    )
             }
         }
         .ignoresSafeArea(.all, edges: .bottom)
