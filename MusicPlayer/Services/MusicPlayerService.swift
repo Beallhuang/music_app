@@ -150,6 +150,11 @@ class MusicPlayerService: NSObject, ObservableObject {
 
         currentSong = song
 
+        // 检查文件是否存在（本地文件）
+        if song.fileURL.isFileURL && !FileManager.default.fileExists(atPath: song.fileURL.path) {
+            print("⚠️ 音频文件不存在: \(song.fileURL.path)")
+        }
+
         // 先移除旧 player 的 time observer，再替换 player
         if let observer = timeObserver {
             player?.removeTimeObserver(observer)

@@ -158,10 +158,10 @@ struct LibraryView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack(spacing: 12) {
                                 ForEach(library.recentlyAddedSongs.prefix(10)) { song in
-                                    SongCardView(song: song)
-                                        .onTapGesture {
-                                            playSong(song)
-                                        }
+                                    Button(action: { playSong(song) }) {
+                                        SongCardView(song: song)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                             .padding(.horizontal, 15)
@@ -185,30 +185,30 @@ struct LibraryView: View {
                 if !library.songs.isEmpty {
                     SectionView(title: "全部歌曲") {
                         ForEach(library.songs) { song in
-                            SongRowView(song: song)
-                                .onTapGesture {
-                                    playSong(song)
+                            Button(action: { playSong(song) }) {
+                                SongRowView(song: song)
+                            }
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(action: { library.toggleFavorite(song) }) {
+                                    Label(song.isFavorite ? "取消收藏" : "添加到收藏",
+                                          systemImage: song.isFavorite ? "heart.slash" : "heart")
                                 }
-                                .contextMenu {
-                                    Button(action: { library.toggleFavorite(song) }) {
-                                        Label(song.isFavorite ? "取消收藏" : "添加到收藏",
-                                              systemImage: song.isFavorite ? "heart.slash" : "heart")
-                                    }
-                                    Menu {
-                                        ForEach(library.playlists) { playlist in
-                                            Button(playlist.name) {
-                                                library.addSongToPlaylist(song, playlist: playlist)
-                                            }
+                                Menu {
+                                    ForEach(library.playlists) { playlist in
+                                        Button(playlist.name) {
+                                            library.addSongToPlaylist(song, playlist: playlist)
                                         }
-                                    } label: {
-                                        Label("添加到歌单", systemImage: "text.badge.plus")
                                     }
-                                    Button(role: .destructive) {
-                                        library.removeSong(song)
-                                    } label: {
-                                        Label("删除", systemImage: "trash")
-                                    }
+                                } label: {
+                                    Label("添加到歌单", systemImage: "text.badge.plus")
                                 }
+                                Button(role: .destructive) {
+                                    library.removeSong(song)
+                                } label: {
+                                    Label("删除", systemImage: "trash")
+                                }
+                            }
                         }
                     }
                 }
@@ -418,6 +418,7 @@ struct SongRowView: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 8)
+        .contentShape(Rectangle())
         .background(Color.white.opacity(0.03))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal, 15)

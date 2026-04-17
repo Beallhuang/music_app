@@ -17,11 +17,11 @@ struct SongsListView: View {
         ScrollView {
             LazyVStack(spacing: 8) {
                 ForEach(songs) { song in
-                    SongRowView(song: song)
-                        .onTapGesture {
-                            player.play(song: song, in: songs)
-                        }
-                        .contextMenu {
+                    Button(action: { player.play(song: song, in: songs) }) {
+                        SongRowView(song: song)
+                    }
+                    .buttonStyle(.plain)
+                    .contextMenu {
                             // 收藏
                             Button(action: {
                                 library.toggleFavorite(song)

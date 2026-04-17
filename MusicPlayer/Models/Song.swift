@@ -68,7 +68,33 @@ struct Song: Identifiable, Codable, Equatable {
 
     // MARK: - Codable
     enum CodingKeys: String, CodingKey {
-        case id, title, artist, album, duration, fileURL, artwork, dateAdded, isFavorite
+        case id, title, artist, album, duration, fileURL, relativePath, artwork, dateAdded, isFavorite
+    }
+
+    /// 计算相对于 Documents 目录的相对路径
+    private var relativePath: String? {
+        guard let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path else {
+            return nil
+        }
+        let filePath = fileURL.path
+        if filePath.hasPrefix(documentsPath) {
+            return String(filePath.dropFirst(documentsPath.count))
+        }
+        return nil
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encodeIfPresent(artist, forKey: .artist)
+        try container.encodeIfPresent(album, forKey: .album)
+        try container.encode(duration, forKey: .duration)
+        try container.encode(fileURL, forKey: .fileURL)
+        try container.encodeIfPresent(relativePath, forKey: .relativePath)
+        try container.encodeIfPresent(artwork, forKey: .artwork)
+        try container.encode(dateAdded, forKey: .dateAdded)
+        try container.encode(isFavorite, forKey: .isFavorite)
     }
 
     init(from decoder: Decoder) throws {
@@ -78,10 +104,23 @@ struct Song: Identifiable, Codable, Equatable {
         artist = try container.decodeIfPresent(String.self, forKey: .artist)
         album = try container.decodeIfPresent(String.self, forKey: .album)
         duration = try container.decode(TimeInterval.self, forKey: .duration)
-        fileURL = try container.decode(URL.self, forKey: .fileURL)
         artwork = try container.decodeIfPresent(Data.self, forKey: .artwork)
         dateAdded = try container.decode(Date.self, forKey: .dateAdded)
         isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false
+
+        // 优先用相对路径拼接当前 Documents 目录，解决 iOS 沙盒容器 UUID 变化问题
+        let savedURL = try container.decode(URL.self, forKey: .fileURL)
+        if let relPath = try container.decodeIfPresent(String.self, forKey: .relativePath),
+           let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let reconstructed = documentsURL.appendingPathComponent(relPath)
+            if FileManager.default.fileExists(atPath: reconstructed.path) {
+                fileURL = reconstructed
+            } else {
+                fileURL = savedURL
+            }
+        } else {
+            fileURL = savedURL
+        }
     }
 
     static func == (lhs: Song, rhs: Song) -> Bool {

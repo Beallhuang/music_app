@@ -179,7 +179,10 @@ struct PlaylistDetailView: View {
                     .padding(.top, 60)
                 } else {
                     ForEach(pl.songs) { song in
-                        playlistSongRow(song, playlist: pl)
+                        Button(action: { player.play(song: song, in: pl.songs) }) {
+                            playlistSongRow(song, playlist: pl)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
