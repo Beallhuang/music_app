@@ -169,7 +169,7 @@ class MusicPlayerService: NSObject, ObservableObject {
 
         player?.play()
         isPlaying = true
-        duration = song.duration
+        duration = song.duration > 0 ? song.duration : 0
 
         // 远程歌曲自动缓存：播放时如果未下载，自动触发后台下载
         if !song.fileURL.isFileURL {
@@ -295,8 +295,15 @@ class MusicPlayerService: NSObject, ObservableObject {
         // 添加新的时间观察者
         let interval = CMTime(seconds: 0.1, preferredTimescale: 600)
         timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            self?.currentTime = time.seconds
-            self?.updateNowPlayingInfo()
+            guard let self = self else { return }
+            self.currentTime = time.seconds
+            // 从 AVPlayerItem 动态获取真实 duration（解决远程歌曲 duration 为 0 的问题）
+            if self.duration <= 0,
+               let itemDuration = self.player?.currentItem?.duration,
+               itemDuration.isNumeric && !itemDuration.isIndefinite {
+                self.duration = itemDuration.seconds
+            }
+            self.updateNowPlayingInfo()
         }
 
         // 清除旧的播放完成监听，再重新注册（避免重复触发）
